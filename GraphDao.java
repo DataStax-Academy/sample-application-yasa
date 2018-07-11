@@ -1,9 +1,13 @@
 package com.datastax.yasa.dse.dao;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +53,42 @@ public class GraphDao {
     public GraphDao(DseSession dseSession) {
         this.dseSession     = dseSession;
     }
+    
+    /**
+     * Simple Graph Creation.
+     *
+     * @param graphName
+     *      target graphName
+     */
+    public void createGraph(String graphName, boolean ifNotExist) {
+        Assert.hasText(graphName, "'graphName' is required here");
+        String query = String.format("system.graph('%s')", graphName);
+        if (ifNotExist) query += ".ifNotExists()";
+        query += ".create()";
+        LOGGER.info("Create graph with '{}'", query);
+        dseSession.executeGraph(new SimpleGraphStatement(query).setSystemQuery());
+    }
+    
+    /**
+     * Execute gremling file.
+     *
+     * @param graphName
+     * @param gremlinFile
+     */
+    public void executeGremlinFile(String graphName, File gremlinFile) {
+        Assert.hasText(graphName, "'graphName' is required here");
+        Assert.notNull(gremlinFile, "Gremlin file is not null");
+        Assert.isTrue(gremlinFile.exists(), "Gremlin file does not exist");
+        LOGGER.info("Processing Gremlin file: " + gremlinFile.getName());
+        dseSession.getCluster().getConfiguration().getGraphOptions().setGraphName(graphName);
+        try (Stream<String> stream = Files.lines(gremlinFile.toPath())) {
+             stream.peek(line -> LOGGER.info(" + Executed. " + line))
+                   .forEach(dseSession::executeGraph);
+         } catch (IOException e) {
+             LOGGER.error(" + An error occured ", e);
+             throw new IllegalStateException("File has not been fully executed ", e);
+         }
+     }
    
     /**
      * Retrieve available graphs.
@@ -63,17 +103,7 @@ public class GraphDao {
                          .collect(Collectors.toSet());
     }
     
-    /**
-     * Simple Graph Creation.
-     *
-     * @param graphName
-     *      target graphName
-     */
-    public void createGraphIfNotExist(String graphName) {
-        Assert.hasText(graphName, "'graphName' is required here");
-        String query = String.format("system.graph('%s').ifNotExists().create()", graphName);
-        dseSession.executeGraph(new SimpleGraphStatement(query).setSystemQuery());
-    }
+    
     
     /**
      * On a vertex, list type of edges available
@@ -218,40 +248,7 @@ public class GraphDao {
     
     // ----- Custom Queries ---------
     
-    /**
-     * BUSINESS USE CASE : 
-     * Start from a cluster and iterate to display Graph
-     * 
-     * @param graphName
-     *      current GraphName
-     * @param clusterId
-     *      current cluster identifier
-     * @return
-     *      edges and vertices to be displayed in UI>
-     */
-    public VizJsGraph loadClusterByClusterId(String graphName, String clusterId) {
-        Assert.hasText(graphName, "'graphName' is required here");
-        Assert.hasText(clusterId, "'clusterId' is required here");
-        LOGGER.info("Load cluster '{}' on graph '{}'", clusterId, graphName);
-        String querySearchForCluster = "g.V().has('cluster', 'cluster_id', '" + clusterId + "')"
-                                          + ".emit().repeat(both().simplePath())"
-                                          + ".times(4).dedup();";
-        return executeGremlinQuery(graphName, querySearchForCluster, true);
-    }
-    
-    /**
-     * List cluster Id.
-     * 
-     * @param graphName
-     *      current GraphName
-     * @return
-     *      list of cluster ids.
-     */
-    public Set < String > listClusterIds(String graphName) {
-        Assert.hasText(graphName, "'graphName' is required here");
-        GraphStatement graphStatement = new SimpleGraphStatement("g.V().hasLabel('cluster').values('cluster_id');").setGraphName(graphName);
-        GraphResultSet gResult = dseSession.executeGraph(graphStatement);
-        return gResult.all().stream().map(GraphNode::asString).collect(Collectors.toSet());
-    }
+   
+   
     
 }

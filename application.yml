@@ -1,0 +1,49 @@
+# ----------------------------------------------------------
+# Spring Boot extra Config
+# ----------------------------------------------------------
+spring:
+  messages:
+    basename: i18n/messages
+ 
+# ----------------------------------------------------------
+# Connectivity to DataStax Enterprise
+# ----------------------------------------------------------
+dse:
+    
+  # Connectivity to DSE DB, you can provide several contact points (!), they must all have same port.
+  cassandra:
+    contactPoints: 127.0.0.1
+    port: 9042
+    username:
+    password:
+    
+  # Connectivity to DSE Graph, your node should have enabled the workload Graph (-g)  
+  graph:
+    enable: true
+    timeout: 3000
+    
+  # At startup MAY be useful to wait until dse is ready
+  retry:
+    enabled: true
+    maxNumberOfTries: 10
+    delayBetweenTries: 2
+
+# ----------------------------------------------------------
+# Customize UI
+# ----------------------------------------------------------
+ui-graph: 
+   
+   edges:
+     style-default:
+       # Can be arrows, circle or bar
+       style: arrow
+       color: 
+       width: 2px;
+     style-customers:
+     
+   nodes:
+      style: icons
+      # List can be found here : http://astronautweb.co/snippet/font-awesome/
+      icons:
+        labelX: ds
+        
