@@ -1,0 +1,42 @@
+<!-- Java driver for DSE -->
+		<dependency>
+			<groupId>com.datastax.dse</groupId>
+			<artifactId>dse-java-driver-core</artifactId>
+			<version>${dse-driver.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-handler</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.dse</groupId>
+			<artifactId>dse-java-driver-mapping</artifactId>
+			<version>${dse-driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.dse</groupId>
+			<artifactId>dse-java-driver-extras</artifactId>
+			<version>${dse-driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.dse</groupId>
+			<artifactId>dse-java-driver-graph</artifactId>
+			<version>${dse-driver.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>${netty.version}</version>
+		</dependency>
+
+<dse-driver.version>1.6.8</dse.version>
+<netty.version>4.1.23.Final</netty.version>
+
+
+https://github.com/pmehra7/dseGraphFrameLoad/blob/master/pom.xml
+
+
+
+
