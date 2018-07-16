@@ -39,7 +39,7 @@ import com.google.common.collect.ImmutableMap;
 
 
 /**
- * Leveraging on gremlin queries and VizJS to display c360.
+ * Implementation of Business Use Cases cased on GRAPH but specifically for CUSTOMER_360
  *
  * @author Cedrick LUNVEN (@clunven)
  */
@@ -49,6 +49,7 @@ public class Customer360GraphDao extends GraphDao {
     /** Loger for that class. */
     protected Logger LOGGER = LoggerFactory.getLogger(Customer360GraphDao.class);
     
+    // GRAPH NAME
     private static final String GRAPHNAME_C360 = "graphc360";
     
     // GRAPH ENTITIES

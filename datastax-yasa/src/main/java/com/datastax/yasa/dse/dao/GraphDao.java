@@ -236,7 +236,6 @@ public class GraphDao {
                     gv.setLabel(label);
                 }
             }
-            
             gv.setGroup(v.getLabel());
             graph.addVertex(gv);
             
